@@ -12,6 +12,8 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+#--------------------------------------------------------
+
 data "aws_ami" "latest_ubuntu_ami" {
   owners      = ["099720109477"]
   most_recent = true
@@ -29,7 +31,7 @@ resource "aws_security_group" "TG-bot-server-SG" {
   name_prefix = "SG-for-TG-bot-"
 
   dynamic "ingress" {
-    for_each = ["8443", "3000"]
+    for_each = ["22", "8443", "3000"]
     content {
       from_port   = ingress.value
       to_port     = ingress.value
@@ -52,6 +54,7 @@ resource "aws_instance" "TG-bot-server" {
   vpc_security_group_ids = [
     aws_security_group.TG-bot-server-SG.id
   ]
+  user_data = file("startup.sh")
 }
 
 #--------------------------------------------------------
